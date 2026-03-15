@@ -1,22 +1,3 @@
-/*******************************************************************
- *
- * main.c - LVGL simulator for GNU/Linux
- *
- * Based on the original file from the repository
- *
- * @note eventually this file won't contain a main function and will
- * become a library supporting all major operating systems
- *
- * To see how each driver is initialized check the
- * 'src/lib/display_backends' directory
- *
- * - Clean up
- * - Support for multiple backends at once
- *   2025 EDGEMTech Ltd.
- *
- * Author: EDGEMTech Ltd, Erik Tagirov (erik.tagirov@edgemtech.ch)
- *
- ******************************************************************/
 #include <unistd.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -24,170 +5,86 @@
 #include <string.h>
 
 #include "lvgl/lvgl.h"
-#include "lvgl/demos/lv_demos.h"
 
 #include "src/lib/driver_backends.h"
-#include "src/lib/simulator_util.h"
-#include "src/lib/simulator_settings.h"
 
-/* Internal functions */
-static void configure_simulator(int argc, char ** argv);
-static void print_lvgl_version(void);
-static void print_usage(void);
+/* =========================
+ * GUI CREATION
+ * ========================= */
 
-/* contains the name of the selected backend if user
- * has specified one on the command line */
-static char * selected_backend;
-
-/* Global simulator settings, defined in lv_linux_backend.c */
-extern simulator_settings_t settings;
-
-
-/**
- * @brief Print LVGL version
- */
-static void print_lvgl_version(void)
+static void btn_event_cb(lv_event_t *e)
 {
-    fprintf(stdout, "%d.%d.%d-%s\n",
-            LVGL_VERSION_MAJOR,
-            LVGL_VERSION_MINOR,
-            LVGL_VERSION_PATCH,
-            LVGL_VERSION_INFO);
+    if (lv_event_get_code(e) == LV_EVENT_CLICKED)
+    {
+        printf("Button clicked!\n");
+    }
 }
 
-/**
- * @brief Print usage information
- */
-static void print_usage(void)
+static void create_gui(void)
 {
-    fprintf(stdout,
-            "\nlvglsim [-V] [-B] [-f] [-m] [-b backend_name] [-W window_width] [-H window_height] [-R rotation]\n\n");
-    fprintf(stdout, "-V print LVGL version\n");
-    fprintf(stdout, "-B list supported backends\n");
-    fprintf(stdout, "-f fullscreen\n");
-    fprintf(stdout, "-m maximize\n");
+    lv_obj_t *scr = lv_screen_active();
+
+    /* Create tabview */
+    lv_obj_t *tabview = lv_tabview_create(scr);
+    lv_obj_set_size(tabview, LV_PCT(100), LV_PCT(100));
+
+    /* Tabs */
+    lv_obj_t *tab_status = lv_tabview_add_tab(tabview, "Status");
+    lv_obj_t *tab_ctrl = lv_tabview_add_tab(tabview, "Control");
+
+    /* ===== Status tab ===== */
+    lv_obj_t *label_title = lv_label_create(tab_status);
+    lv_label_set_text(label_title, "Raspberry Pi Status");
+    lv_obj_set_style_text_font(label_title, &lv_font_montserrat_20, 0);
+    lv_obj_align(label_title, LV_ALIGN_TOP_MID, 0, 10);
+
+    lv_obj_t *label_ip = lv_label_create(tab_status);
+    lv_label_set_text(label_ip, "IP: 192.168.1.100");
+    lv_obj_align(label_ip, LV_ALIGN_TOP_LEFT, 10, 50);
+
+    lv_obj_t *label_info = lv_label_create(tab_status);
+    lv_label_set_text(label_info, "Display: SPI LCD\nTouch: ADS7846");
+    lv_obj_align(label_info, LV_ALIGN_TOP_LEFT, 10, 80);
+
+    /* ===== Control tab ===== */
+    lv_obj_t *btn = lv_button_create(tab_ctrl);
+    lv_obj_set_size(btn, 120, 50);
+    lv_obj_center(btn);
+    lv_obj_add_event_cb(btn, btn_event_cb, LV_EVENT_CLICKED, NULL);
+
+    lv_obj_t *btn_label = lv_label_create(btn);
+    lv_label_set_text(btn_label, "Press me");
+    lv_obj_center(btn_label);
 }
 
-/**
- * @brief Configure simulator
- * @description process arguments received by the program to select
- * appropriate options
- * @param argc the count of arguments in argv
- * @param argv The arguments
- */
-static void configure_simulator(int argc, char ** argv)
-{
-    int opt = 0;
+/* =========================
+ * MAIN
+ * ========================= */
 
-    selected_backend = NULL;
+int main(int argc, char **argv)
+{
     driver_backends_register();
 
-    const char * env_w = getenv("LV_SIM_WINDOW_WIDTH");
-    const char * env_h = getenv("LV_SIM_WINDOW_HEIGHT");
-    /* Default values */
-    settings.window_width = atoi(env_w ? env_w : "800");
-    settings.window_height = atoi(env_h ? env_h : "480");
-
-    /* Parse the command-line options. */
-    while((opt = getopt(argc, argv, "b:fmW:H:R:BVh")) != -1) {
-        switch(opt) {
-            case 'h':
-                print_usage();
-                exit(EXIT_SUCCESS);
-                break;
-            case 'V':
-                print_lvgl_version();
-                exit(EXIT_SUCCESS);
-                break;
-            case 'B':
-                driver_backends_print_supported();
-                exit(EXIT_SUCCESS);
-                break;
-            case 'b':
-                if(driver_backends_is_supported(optarg) == 0) {
-                    die("error no such backend: %s\n", optarg);
-                }
-                selected_backend = strdup(optarg);
-                break;
-            case 'f':
-                settings.fullscreen = true;
-                break;
-            case 'm':
-                settings.maximize = true;
-                break;
-            case 'W':
-                settings.window_width = atoi(optarg);
-                break;
-            case 'H':
-                settings.window_height = atoi(optarg);
-                break;
-            case 'R':
-                switch(atoi(optarg)) {
-                    case 0:
-                        settings.rotation = LV_DISPLAY_ROTATION_0;
-                        break;
-                    case 90:
-                        settings.rotation = LV_DISPLAY_ROTATION_90;
-                        break;
-                    case 180:
-                        settings.rotation = LV_DISPLAY_ROTATION_180;
-                        break;
-                    case 270:
-                        settings.rotation = LV_DISPLAY_ROTATION_270;
-                        break;
-                    default:
-                        LV_LOG_WARN("Invalid rotation angle. Valid angles are {0, 90, 180, 270}");
-                        break;
-                }
-                break;
-            case ':':
-                print_usage();
-                die("Option -%c requires an argument.\n", optopt);
-                break;
-            case '?':
-                print_usage();
-                die("Unknown option -%c.\n", optopt);
-        }
-    }
-}
-
-/**
- * @brief entry point
- * @description start a demo
- * @param argc the count of arguments in argv
- * @param argv The arguments
- */
-int main(int argc, char ** argv)
-{
-
-    configure_simulator(argc, argv);
-
-    /* Initialize LVGL. */
+    /* Initialize LVGL */
     lv_init();
 
-    /* Initialize the configured backend */
-    if(driver_backends_init_backend(selected_backend) == -1) {
-        die("Failed to initialize display backend");
-    }
-    if(settings.rotation) {
-#if LV_USE_DRAW_NANOVG && LV_DRAW_TRANSFORM_USE_MATRIX
-        lv_display_set_matrix_rotation(NULL, true);
-#endif
-        lv_display_set_rotation(NULL, settings.rotation);
+    /* Initialize framebuffer / DRM / etc */
+    if (driver_backends_init_backend("FBDEV") == -1)
+    {
+        fprintf(stderr, "Failed to init display backend\n");
+        return -1;
     }
 
-    /* Enable for EVDEV support */
-#if LV_USE_EVDEV
-    if(driver_backends_init_backend("EVDEV") == -1) {
-        die("Failed to initialize evdev");
+    if (driver_backends_init_backend("EVDEV") == -1)
+    {
+        fprintf(stderr, "Failed to init evdev\n");
+        return -1;
     }
-#endif
 
-    /*Create a Demo*/
-    lv_demo_widgets();
-    lv_demo_widgets_start_slideshow();
+    /* Create your GUI */
+    create_gui();
 
-    /* Enter the run loop of the selected backend */
+    /* Run backend loop (blocking) */
     driver_backends_run_loop();
 
     return 0;
