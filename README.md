@@ -1,1 +1,0 @@
-# pi-home-lafvin-ui
