@@ -3,8 +3,7 @@
 
 #include "lvgl/lvgl.h"
 
-typedef struct
-{
+typedef struct {
     lv_display_t *display;
     lv_indev_t *input;
 } lvgl_driver_t;
