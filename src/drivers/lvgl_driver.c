@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "lvgl_driver.h"
 #include "display.h"
 #include "evdev.h"
+#include "lvgl_driver.h"
 
 lvgl_driver_t *lvgl_driver_create(void)
 {
@@ -12,15 +12,12 @@ lvgl_driver_t *lvgl_driver_create(void)
         return NULL;
 
     drv->display = lvgl_display_init();
-    if (!drv->display)
-    {
+    if (!drv->display) {
         fprintf(stderr, "Failed to initialize display device\n");
         goto error_display;
     }
 
-    drv->input = lvgl_evdev_init(drv->display);
-    if (!drv->input)
-    {
+    if (lvgl_evdev_init(drv) != 0) {
         fprintf(stderr, "Failed to initialize input device\n");
         goto error_input;
     }
