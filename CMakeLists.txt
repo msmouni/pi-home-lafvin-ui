@@ -57,11 +57,12 @@ add_subdirectory(lvgl)
 
 # ========== App Sources ==========
 set(APP_SOURCES
+    src/gui/gui.c
     src/main.c
-    src/lib/driver_backends.c
-    src/lib/simulator_util.c
-    src/lib/display_backends/fbdev.c
-    src/lib/indev_backends/evdev.c
+    src/drivers/display/fbdev/fbdev.c
+    src/drivers/display/display.c
+    src/drivers/evdev/evdev.c
+    src/drivers/lvgl_driver.c
 )
 
 # ========== Executable ==========
@@ -70,8 +71,12 @@ add_executable(lvgl_app ${APP_SOURCES})
 # ========== Includes ==========
 target_include_directories(lvgl_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lib
     ${CMAKE_CURRENT_SOURCE_DIR}/lvgl
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/display/fbdev
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/display
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/evdev
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers
 )
 
 # ========== Link ==========
@@ -82,7 +87,7 @@ target_link_libraries(lvgl_app
     stdc++
 )
 
-# ========== Install (Buildroot friendly) ==========
+# ========== Install ==========
 install(TARGETS lvgl_app
     RUNTIME DESTINATION bin
 )
