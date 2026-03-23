@@ -9,48 +9,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
 
-set(CONFIG "default" CACHE STRING "Config name to use. Leave empty for default `lv_conf.defaults`")
+# =========================
+# LVGL CONFIG (external)
+# =========================
 
-set(LV_CONF_DEFAULTS_PATH "${CMAKE_SOURCE_DIR}/lv_conf.defaults")
+set(LV_CONF_PATH "${CMAKE_SOURCE_DIR}/lv_conf.h")
 
-# If CONFIG is not default, update LV_CONF_DEFAULTS_PATH to the selected config
-if(NOT CONFIG STREQUAL "default")
-    set(LV_CONF_DEFAULTS_PATH "${CMAKE_SOURCE_DIR}/configs/${CONFIG}.defaults")
+if(NOT EXISTS "${LV_CONF_PATH}")
+    message(FATAL_ERROR
+        "lv_conf.h not found!\n"
+        "Run ./generate_lv_conf.sh before building."
+    )
 endif()
 
-if(NOT EXISTS "${LV_CONF_DEFAULTS_PATH}")
-    message(FATAL_ERROR "Config file not found: ${LV_CONF_DEFAULTS_PATH}")
-endif()
-message(STATUS "Using config: ${LV_CONF_DEFAULTS_PATH}")
-
-set(LV_BUILD_SET_CONFIG_OPTS ON CACHE BOOL
-    "create CMAKE variables from lv_conf_internal.h" FORCE)
-
-set(LV_BUILD_CONF_PATH
-    "${CMAKE_BINARY_DIR}/lv_conf.h"
-    CACHE PATH "path to lv_conf.h" FORCE)
-
-set(LVGL_TEMPLATE_PATH "${CMAKE_SOURCE_DIR}/lvgl/lv_conf_template.h")
-set(GENERATE_SCRIPT_PATH "${CMAKE_SOURCE_DIR}/lvgl/scripts/generate_lv_conf.py")
-
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${LVGL_TEMPLATE_PATH})
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${LV_CONF_DEFAULTS_PATH})
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${GENERATE_SCRIPT_PATH})
-
-execute_process(
-  COMMAND
-    ${Python3_EXECUTABLE} ${GENERATE_SCRIPT_PATH} --template
-    ${LVGL_TEMPLATE_PATH} --defaults ${LV_CONF_DEFAULTS_PATH} --config
-    ${LV_BUILD_CONF_PATH}
-  RESULT_VARIABLE config_result
-  OUTPUT_VARIABLE config_output
-  ERROR_VARIABLE config_output)
-
-if(NOT config_result EQUAL 0)
-  message(FATAL_ERROR "Failed to generate lv_conf.h: ${config_output}")
-endif()
-
-message(STATUS "${LV_BUILD_CONF_PATH} generated successfully")
+message(STATUS "Using lv_conf.h: ${LV_CONF_PATH}")
 
 # ========== LVGL ==========
 add_subdirectory(lvgl)
@@ -79,7 +51,9 @@ target_include_directories(lvgl_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers
 )
 
-# ========== Link ==========
+# Ensure lv_conf.h is found
+target_compile_definitions(lvgl_app PRIVATE LV_CONF_INCLUDE_SIMPLE)
+
 target_link_libraries(lvgl_app
     lvgl
     pthread
