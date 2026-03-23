@@ -28,9 +28,14 @@ message(STATUS "Using lv_conf.h: ${LV_CONF_PATH}")
 add_subdirectory(lvgl)
 
 # ========== App Sources ==========
+file(GLOB_RECURSE SQUARELINE_SOURCES
+    src/gui/squareline/*.c
+)
+
 set(APP_SOURCES
     src/gui/gui.c
     src/main.c
+    ${SQUARELINE_SOURCES}
     src/drivers/display/fbdev/fbdev.c
     src/drivers/display/display.c
     src/drivers/evdev/evdev.c
@@ -49,6 +54,11 @@ target_include_directories(lvgl_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/display
     ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers/evdev
     ${CMAKE_CURRENT_SOURCE_DIR}/src/drivers
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/components
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/screens
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/images
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/fonts
 )
 
 # Ensure lv_conf.h is found

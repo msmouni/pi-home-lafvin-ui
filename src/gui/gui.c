@@ -3,16 +3,16 @@
 
 #include "gui.h"
 #include "lvgl/lvgl.h"
+#include "squareline/ui.h"
 
 static void btn_event_cb(lv_event_t *e)
 {
-    if (lv_event_get_code(e) == LV_EVENT_CLICKED)
-    {
+    if (lv_event_get_code(e) == LV_EVENT_CLICKED) {
         printf("Button clicked!\n");
     }
 }
 
-void gui_create(void)
+static void gui_create_v0(void)
 {
     lv_obj_t *scr = lv_screen_active();
 
@@ -47,4 +47,9 @@ void gui_create(void)
     lv_obj_t *btn_label = lv_label_create(btn);
     lv_label_set_text(btn_label, "Press me");
     lv_obj_center(btn_label);
+}
+
+void gui_create(void)
+{
+    ui_init(); // 🔥 This starts the SquareLine UI
 }
