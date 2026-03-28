@@ -49,7 +49,112 @@ static void gui_create_v0(void)
     lv_obj_center(btn_label);
 }
 
+/////////////////////////// SquareLine Studio
+
+#define CHART_POINTS 60 // 60 samples (e.g. 60 seconds)
+
+// Temperature (2 series)
+static lv_chart_series_t *temp_series_1; // BMP280
+static lv_chart_series_t *temp_series_2; // HTU21D
+
+// Humidity
+static lv_chart_series_t *hum_series;
+
+// Pressure
+static lv_chart_series_t *press_series;
+
+void gui_post_init(void)
+{
+    /* ================= TEMPERATURE ================= */
+    lv_chart_set_point_count(ui_TemperatureChart, CHART_POINTS);
+
+    temp_series_1 = lv_chart_add_series(ui_TemperatureChart, lv_palette_main(LV_PALETTE_RED),
+                                        LV_CHART_AXIS_PRIMARY_Y);
+
+    temp_series_2 = lv_chart_add_series(ui_TemperatureChart, lv_palette_main(LV_PALETTE_BLUE),
+                                        LV_CHART_AXIS_PRIMARY_Y);
+
+    lv_chart_set_range(ui_TemperatureChart, LV_CHART_AXIS_PRIMARY_Y, -10, 50);
+
+    /* ================= HUMIDITY ================= */
+    lv_chart_set_point_count(ui_HumidityChart, CHART_POINTS);
+
+    hum_series = lv_chart_add_series(ui_HumidityChart, lv_palette_main(LV_PALETTE_GREEN),
+                                     LV_CHART_AXIS_PRIMARY_Y);
+
+    lv_chart_set_range(ui_HumidityChart, LV_CHART_AXIS_PRIMARY_Y, 0, 100);
+
+    /* ================= PRESSURE ================= */
+    lv_chart_set_point_count(ui_PressureChart, CHART_POINTS);
+
+    press_series = lv_chart_add_series(ui_PressureChart, lv_palette_main(LV_PALETTE_ORANGE),
+                                       LV_CHART_AXIS_PRIMARY_Y);
+
+    lv_chart_set_range(ui_PressureChart, LV_CHART_AXIS_PRIMARY_Y, 900, 1100);
+
+    /* Initial refresh */
+    lv_chart_refresh(ui_TemperatureChart);
+    lv_chart_refresh(ui_HumidityChart);
+    lv_chart_refresh(ui_PressureChart);
+}
+
+void gui_update(const display_model_t *model)
+{
+    if (!model)
+        return;
+
+    /* Time */
+    struct tm timeinfo;
+    localtime_r(&model->timestamp, &timeinfo);
+    char time_str[64];
+    strftime(time_str, sizeof(time_str), "%H:%M:%S", &timeinfo);
+    char date_str[64];
+    strftime(date_str, sizeof(date_str), "%Y-%m-%d", &timeinfo);
+    lv_label_set_text(ui_TimeLabel, time_str);
+    lv_label_set_text_fmt(ui_DateLabel, date_str);
+
+    /* ================= WIFI ================= */
+    if (model->wifi_connected) {
+        lv_label_set_text(ui_WifiStatus, "WiFi: Connected");
+    } else {
+        lv_label_set_text(ui_WifiStatus, "WiFi: Disconnected");
+    }
+
+    lv_label_set_text_fmt(ui_IpAddress, "IP: %s", model->ip);
+
+    /* ================= SYSTEM ================= */
+    lv_label_set_text_fmt(ui_CpuTemp, "CPU Temp: %d°C", model->cpu_temp);
+    lv_label_set_text_fmt(ui_CpuLoad, "CPU Load: %d%%", model->cpu_load);
+
+    /* ================= CHARTS ================= */
+
+    // Temperature
+    if (model->has_bmp280)
+        lv_chart_set_next_value(ui_TemperatureChart, temp_series_1,
+                                (lv_coord_t)model->bmp280_temperature);
+
+    if (model->has_htu21d)
+        lv_chart_set_next_value(ui_TemperatureChart, temp_series_2,
+                                (lv_coord_t)model->htu21d_temperature);
+
+    // Humidity
+    if (model->has_htu21d)
+        lv_chart_set_next_value(ui_HumidityChart, hum_series, (lv_coord_t)model->htu21d_humidity);
+
+    // Pressure
+    if (model->has_bmp280)
+        lv_chart_set_next_value(ui_PressureChart, press_series, (lv_coord_t)model->bmp280_pressure);
+
+    /* Refresh charts */
+    lv_chart_refresh(ui_TemperatureChart);
+    lv_chart_refresh(ui_HumidityChart);
+    lv_chart_refresh(ui_PressureChart);
+}
+
 void gui_create(void)
 {
-    ui_init(); // 🔥 This starts the SquareLine UI
+    // SquareLine Studio generated code
+    ui_init();
+
+    gui_post_init();
 }

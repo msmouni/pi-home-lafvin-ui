@@ -11,6 +11,9 @@ lv_obj_t * ui_Screen1 = NULL;
 lv_obj_t * ui_SystemTab = NULL;
 lv_obj_t * ui_StatusTab = NULL;
 lv_obj_t * ui_Status = NULL;
+lv_obj_t * ui_TimeDate = NULL;
+lv_obj_t * ui_TimeLabel = NULL;
+lv_obj_t * ui_DateLabel = NULL;
 lv_obj_t * ui_Wifi = NULL;
 lv_obj_t * ui_WifiStatus = NULL;
 lv_obj_t * ui_SSID = NULL;
@@ -23,10 +26,24 @@ lv_obj_t * ui_RamUsage = NULL;
 lv_obj_t * ui_UpTime = NULL;
 lv_obj_t * ui_SensorsTab = NULL;
 lv_obj_t * ui_SensorsData = NULL;
-lv_obj_t * ui_SensorsChart = NULL;
-lv_obj_t * ui_SensorsChart_Xaxis = NULL;
-lv_obj_t * ui_SensorsChart_Yaxis1 = NULL;
-lv_obj_t * ui_SensorsChart_Yaxis2 = NULL;
+lv_obj_t * ui_TemperatureContainer = NULL;
+lv_obj_t * ui_TemperatureLable = NULL;
+lv_obj_t * ui_TemperatureChart = NULL;
+lv_obj_t * ui_TemperatureChart_Xaxis = NULL;
+lv_obj_t * ui_TemperatureChart_Yaxis1 = NULL;
+lv_obj_t * ui_TemperatureChart_Yaxis2 = NULL;
+lv_obj_t * ui_HumidityContainer = NULL;
+lv_obj_t * ui_HumidityLable = NULL;
+lv_obj_t * ui_HumidityChart = NULL;
+lv_obj_t * ui_HumidityChart_Xaxis = NULL;
+lv_obj_t * ui_HumidityChart_Yaxis1 = NULL;
+lv_obj_t * ui_HumidityChart_Yaxis2 = NULL;
+lv_obj_t * ui_PressureContainer = NULL;
+lv_obj_t * ui_PressureLable = NULL;
+lv_obj_t * ui_PressureChart = NULL;
+lv_obj_t * ui_PressureChart_Xaxis = NULL;
+lv_obj_t * ui_PressureChart_Yaxis1 = NULL;
+lv_obj_t * ui_PressureChart_Yaxis2 = NULL;
 // event funtions
 
 // build funtions
@@ -51,8 +68,8 @@ void ui_Screen1_screen_init(void)
 
     ui_Status = lv_obj_create(ui_StatusTab);
     lv_obj_remove_style_all(ui_Status);
-    lv_obj_set_width(ui_Status, 480);
-    lv_obj_set_height(ui_Status, 261);
+    lv_obj_set_width(ui_Status, 440);
+    lv_obj_set_height(ui_Status, 297);
     lv_obj_set_x(ui_Status, 2);
     lv_obj_set_y(ui_Status, -23);
     lv_obj_set_align(ui_Status, LV_ALIGN_CENTER);
@@ -65,6 +82,30 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_pad_bottom(ui_Status, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_row(ui_Status, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_pad_column(ui_Status, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_TimeDate = lv_obj_create(ui_Status);
+    lv_obj_remove_style_all(ui_TimeDate);
+    lv_obj_set_width(ui_TimeDate, 288);
+    lv_obj_set_height(ui_TimeDate, 50);
+    lv_obj_set_align(ui_TimeDate, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_TimeDate, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(ui_TimeDate, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_START);
+    lv_obj_remove_flag(ui_TimeDate, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_pad_row(ui_TimeDate, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_column(ui_TimeDate, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_TimeLabel = lv_label_create(ui_TimeDate);
+    lv_obj_set_width(ui_TimeLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_TimeLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_TimeLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_TimeLabel, "23:24");
+    lv_obj_set_style_text_font(ui_TimeLabel, &lv_font_montserrat_42, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_DateLabel = lv_label_create(ui_TimeDate);
+    lv_obj_set_width(ui_DateLabel, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_DateLabel, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_DateLabel, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_DateLabel, "28-03-2026");
 
     ui_Wifi = lv_obj_create(ui_Status);
     lv_obj_remove_style_all(ui_Wifi);
@@ -155,82 +196,247 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_UpTime, "Uptime: 01:23:45");
 
     ui_SensorsTab = lv_tabview_add_tab(ui_SystemTab, "Sensors");
-    lv_obj_set_flex_flow(ui_SensorsTab, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_SensorsTab, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
     ui_SensorsData = lv_obj_create(ui_SensorsTab);
     lv_obj_remove_style_all(ui_SensorsData);
-    lv_obj_set_width(ui_SensorsData, 361);
-    lv_obj_set_height(ui_SensorsData, 163);
-    lv_obj_set_x(ui_SensorsData, -2);
-    lv_obj_set_y(ui_SensorsData, -20);
+    lv_obj_set_width(ui_SensorsData, 402);
+    lv_obj_set_height(ui_SensorsData, 597);
+    lv_obj_set_x(ui_SensorsData, -5);
+    lv_obj_set_y(ui_SensorsData, 172);
     lv_obj_set_align(ui_SensorsData, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_SensorsData, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_SensorsData, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_flex_align(ui_SensorsData, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_remove_flag(ui_SensorsData, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_pad_row(ui_SensorsData, 30, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_pad_column(ui_SensorsData, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_SensorsChart = lv_chart_create(ui_SensorsData);
-    lv_obj_set_width(ui_SensorsChart, 269);
-    lv_obj_set_height(ui_SensorsChart, 128);
-    lv_obj_set_align(ui_SensorsChart, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_SensorsChart, LV_OBJ_FLAG_OVERFLOW_VISIBLE);     /// Flags
-    lv_obj_remove_flag(ui_SensorsChart, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_add_flag(ui_SensorsChart,
+    ui_TemperatureContainer = lv_obj_create(ui_SensorsData);
+    lv_obj_remove_style_all(ui_TemperatureContainer);
+    lv_obj_set_width(ui_TemperatureContainer, 385);
+    lv_obj_set_height(ui_TemperatureContainer, 172);
+    lv_obj_set_align(ui_TemperatureContainer, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_TemperatureContainer, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(ui_TemperatureContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_remove_flag(ui_TemperatureContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_scroll_dir(ui_TemperatureContainer, LV_DIR_VER);
+
+    ui_TemperatureLable = lv_label_create(ui_TemperatureContainer);
+    lv_obj_set_width(ui_TemperatureLable, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_TemperatureLable, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_TemperatureLable, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_TemperatureLable, "Temperature (°C)");
+
+    ui_TemperatureChart = lv_chart_create(ui_TemperatureContainer);
+    lv_obj_set_width(ui_TemperatureChart, 269);
+    lv_obj_set_height(ui_TemperatureChart, 128);
+    lv_obj_set_align(ui_TemperatureChart, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_TemperatureChart, LV_OBJ_FLAG_OVERFLOW_VISIBLE);     /// Flags
+    lv_obj_remove_flag(ui_TemperatureChart, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_TemperatureChart,
                     LV_OBJ_FLAG_OVERFLOW_VISIBLE);      //make scales visible - Should it be forced to True?
-    //lv_obj_remove_flag( ui_SensorsChart, LV_OBJ_FLAG_SCROLLABLE );    //no chart-zoom in LVGL9 - Shouldn't it be forced to False?
-    lv_chart_set_type(ui_SensorsChart, LV_CHART_TYPE_LINE);
-    lv_obj_set_style_bg_color(ui_SensorsChart, lv_color_hex(0x0015D1), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_SensorsChart, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
+    //lv_obj_remove_flag( ui_TemperatureChart, LV_OBJ_FLAG_SCROLLABLE );    //no chart-zoom in LVGL9 - Shouldn't it be forced to False?
+    lv_chart_set_type(ui_TemperatureChart, LV_CHART_TYPE_LINE);
+    lv_obj_set_style_bg_color(ui_TemperatureChart, lv_color_hex(0x0015D1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_TemperatureChart, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_SensorsChart_Xaxis = lv_scale_create(ui_SensorsChart);
-    lv_scale_set_mode(ui_SensorsChart_Xaxis, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
-    lv_obj_set_size(ui_SensorsChart_Xaxis, lv_pct(100), 50);
-    lv_obj_set_align(ui_SensorsChart_Xaxis, LV_ALIGN_BOTTOM_MID);
-    lv_obj_set_y(ui_SensorsChart_Xaxis, 50 + lv_obj_get_style_pad_bottom(ui_SensorsChart,
-                                                                         LV_PART_MAIN) + lv_obj_get_style_border_width(ui_SensorsChart, LV_PART_MAIN));
-    lv_obj_set_style_line_width(ui_SensorsChart_Xaxis, 0, LV_PART_MAIN);
-    lv_obj_set_style_line_width(ui_SensorsChart_Xaxis, 1, LV_PART_ITEMS);   //LVGL-9.1 ticks are thicker by default
-    lv_obj_set_style_line_width(ui_SensorsChart_Xaxis, 1, LV_PART_INDICATOR);
-    lv_obj_set_style_length(ui_SensorsChart_Xaxis, 5, LV_PART_ITEMS);      //minor tick length
-    lv_obj_set_style_length(ui_SensorsChart_Xaxis, 10, LV_PART_INDICATOR);      //major tick length
-    lv_scale_set_range(ui_SensorsChart_Xaxis, 0, 5 > 0 ? 5 - 1 : 0);
-    lv_scale_set_total_tick_count(ui_SensorsChart_Xaxis, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
-    lv_scale_set_major_tick_every(ui_SensorsChart_Xaxis, 2 >= 1 ? 2 : 1);
-    ui_SensorsChart_Yaxis1 = lv_scale_create(ui_SensorsChart);
-    lv_scale_set_mode(ui_SensorsChart_Yaxis1, LV_SCALE_MODE_VERTICAL_LEFT);
-    lv_obj_set_size(ui_SensorsChart_Yaxis1, 50, lv_pct(100));
-    lv_obj_set_align(ui_SensorsChart_Yaxis1, LV_ALIGN_LEFT_MID);
-    lv_obj_set_x(ui_SensorsChart_Yaxis1, -50 - lv_obj_get_style_pad_left(ui_SensorsChart,
-                                                                         LV_PART_MAIN) - lv_obj_get_style_border_width(ui_SensorsChart, LV_PART_MAIN) + 2);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis1, 0, LV_PART_MAIN);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis1, 1, LV_PART_ITEMS);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis1, 1, LV_PART_INDICATOR);
-    lv_obj_set_style_length(ui_SensorsChart_Yaxis1, 5, LV_PART_ITEMS);   //minor tick length
-    lv_obj_set_style_length(ui_SensorsChart_Yaxis1, 10, LV_PART_INDICATOR);   //major tick length
-    lv_scale_set_total_tick_count(ui_SensorsChart_Yaxis1, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
-    lv_scale_set_major_tick_every(ui_SensorsChart_Yaxis1, 2 >= 1 ? 2 : 1);
-    ui_SensorsChart_Yaxis2 = lv_scale_create(ui_SensorsChart);
-    lv_scale_set_mode(ui_SensorsChart_Yaxis2, LV_SCALE_MODE_VERTICAL_RIGHT);
-    lv_obj_set_size(ui_SensorsChart_Yaxis2, 25, lv_pct(100));
-    lv_obj_set_align(ui_SensorsChart_Yaxis2, LV_ALIGN_RIGHT_MID);
-    lv_obj_set_x(ui_SensorsChart_Yaxis2, 25 + lv_obj_get_style_pad_right(ui_SensorsChart,
-                                                                         LV_PART_MAIN) + lv_obj_get_style_border_width(ui_SensorsChart, LV_PART_MAIN) + 1);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis2, 0, LV_PART_MAIN);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis2, 1, LV_PART_ITEMS);
-    lv_obj_set_style_line_width(ui_SensorsChart_Yaxis2, 1, LV_PART_INDICATOR);
-    lv_obj_set_style_length(ui_SensorsChart_Yaxis2, 5, LV_PART_ITEMS);   //minor tick length
-    lv_obj_set_style_length(ui_SensorsChart_Yaxis2, 10, LV_PART_INDICATOR);   //major tick length
-    lv_scale_set_total_tick_count(ui_SensorsChart_Yaxis2, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
-    lv_scale_set_major_tick_every(ui_SensorsChart_Yaxis2, 2 >= 1 ? 2 : 1);
-    lv_chart_series_t * ui_SensorsChart_series_1 = lv_chart_add_series(ui_SensorsChart, lv_color_hex(0x00D96E),
-                                                                       LV_CHART_AXIS_PRIMARY_Y);
-    static lv_coord_t ui_SensorsChart_series_1_array[] = { 0, 10, 20, 40, 80, 80, 40, 20, 10, 0 };
-    lv_chart_set_ext_y_array(ui_SensorsChart, ui_SensorsChart_series_1, ui_SensorsChart_series_1_array);
+    ui_TemperatureChart_Xaxis = lv_scale_create(ui_TemperatureChart);
+    lv_scale_set_mode(ui_TemperatureChart_Xaxis, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+    lv_obj_set_size(ui_TemperatureChart_Xaxis, lv_pct(100), 50);
+    lv_obj_set_align(ui_TemperatureChart_Xaxis, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_y(ui_TemperatureChart_Xaxis, 50 + lv_obj_get_style_pad_bottom(ui_TemperatureChart,
+                                                                             LV_PART_MAIN) + lv_obj_get_style_border_width(ui_TemperatureChart, LV_PART_MAIN));
+    lv_obj_set_style_line_width(ui_TemperatureChart_Xaxis, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Xaxis, 1, LV_PART_ITEMS);   //LVGL-9.1 ticks are thicker by default
+    lv_obj_set_style_line_width(ui_TemperatureChart_Xaxis, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_TemperatureChart_Xaxis, 5, LV_PART_ITEMS);      //minor tick length
+    lv_obj_set_style_length(ui_TemperatureChart_Xaxis, 10, LV_PART_INDICATOR);      //major tick length
+    lv_scale_set_range(ui_TemperatureChart_Xaxis, 0, 5 > 0 ? 5 - 1 : 0);
+    lv_scale_set_total_tick_count(ui_TemperatureChart_Xaxis, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_TemperatureChart_Xaxis, 2 >= 1 ? 2 : 1);
+    ui_TemperatureChart_Yaxis1 = lv_scale_create(ui_TemperatureChart);
+    lv_scale_set_mode(ui_TemperatureChart_Yaxis1, LV_SCALE_MODE_VERTICAL_LEFT);
+    lv_obj_set_size(ui_TemperatureChart_Yaxis1, 50, lv_pct(100));
+    lv_obj_set_align(ui_TemperatureChart_Yaxis1, LV_ALIGN_LEFT_MID);
+    lv_obj_set_x(ui_TemperatureChart_Yaxis1, -50 - lv_obj_get_style_pad_left(ui_TemperatureChart,
+                                                                             LV_PART_MAIN) - lv_obj_get_style_border_width(ui_TemperatureChart, LV_PART_MAIN) + 2);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis1, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis1, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis1, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_TemperatureChart_Yaxis1, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_TemperatureChart_Yaxis1, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_TemperatureChart_Yaxis1, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_TemperatureChart_Yaxis1, 2 >= 1 ? 2 : 1);
+    ui_TemperatureChart_Yaxis2 = lv_scale_create(ui_TemperatureChart);
+    lv_scale_set_mode(ui_TemperatureChart_Yaxis2, LV_SCALE_MODE_VERTICAL_RIGHT);
+    lv_obj_set_size(ui_TemperatureChart_Yaxis2, 25, lv_pct(100));
+    lv_obj_set_align(ui_TemperatureChart_Yaxis2, LV_ALIGN_RIGHT_MID);
+    lv_obj_set_x(ui_TemperatureChart_Yaxis2, 25 + lv_obj_get_style_pad_right(ui_TemperatureChart,
+                                                                             LV_PART_MAIN) + lv_obj_get_style_border_width(ui_TemperatureChart, LV_PART_MAIN) + 1);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis2, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis2, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_TemperatureChart_Yaxis2, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_TemperatureChart_Yaxis2, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_TemperatureChart_Yaxis2, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_TemperatureChart_Yaxis2, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_TemperatureChart_Yaxis2, 2 >= 1 ? 2 : 1);
+    lv_scale_set_label_show(ui_TemperatureChart_Yaxis2, false);
 
     //This workaround (an invisible outline) is needed because without it chart overflow-visible doesn't work in LVGL-9.1
-    lv_obj_set_style_outline_pad(ui_SensorsChart, LV_MAX3(50, 50, 25),
+    lv_obj_set_style_outline_pad(ui_TemperatureChart, LV_MAX3(50, 50, 25),
                                  LV_PART_MAIN | LV_STATE_DEFAULT);   //workaround for ineffective 'overflow visible' flag
-    lv_obj_set_style_outline_width(ui_SensorsChart, -1, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_outline_width(ui_TemperatureChart, -1, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_HumidityContainer = lv_obj_create(ui_SensorsData);
+    lv_obj_remove_style_all(ui_HumidityContainer);
+    lv_obj_set_width(ui_HumidityContainer, 385);
+    lv_obj_set_height(ui_HumidityContainer, 172);
+    lv_obj_set_align(ui_HumidityContainer, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_HumidityContainer, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(ui_HumidityContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_remove_flag(ui_HumidityContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_scrollbar_mode(ui_HumidityContainer, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scroll_dir(ui_HumidityContainer, LV_DIR_VER);
+
+    ui_HumidityLable = lv_label_create(ui_HumidityContainer);
+    lv_obj_set_width(ui_HumidityLable, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_HumidityLable, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_HumidityLable, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_HumidityLable, "Humidity (%)");
+
+    ui_HumidityChart = lv_chart_create(ui_HumidityContainer);
+    lv_obj_set_width(ui_HumidityChart, 269);
+    lv_obj_set_height(ui_HumidityChart, 128);
+    lv_obj_set_align(ui_HumidityChart, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_HumidityChart, LV_OBJ_FLAG_OVERFLOW_VISIBLE);     /// Flags
+    lv_obj_remove_flag(ui_HumidityChart, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_HumidityChart,
+                    LV_OBJ_FLAG_OVERFLOW_VISIBLE);      //make scales visible - Should it be forced to True?
+    //lv_obj_remove_flag( ui_HumidityChart, LV_OBJ_FLAG_SCROLLABLE );    //no chart-zoom in LVGL9 - Shouldn't it be forced to False?
+    lv_chart_set_type(ui_HumidityChart, LV_CHART_TYPE_LINE);
+    lv_obj_set_style_bg_color(ui_HumidityChart, lv_color_hex(0x0015D1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_HumidityChart, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_HumidityChart_Xaxis = lv_scale_create(ui_HumidityChart);
+    lv_scale_set_mode(ui_HumidityChart_Xaxis, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+    lv_obj_set_size(ui_HumidityChart_Xaxis, lv_pct(100), 50);
+    lv_obj_set_align(ui_HumidityChart_Xaxis, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_y(ui_HumidityChart_Xaxis, 50 + lv_obj_get_style_pad_bottom(ui_HumidityChart,
+                                                                          LV_PART_MAIN) + lv_obj_get_style_border_width(ui_HumidityChart, LV_PART_MAIN));
+    lv_obj_set_style_line_width(ui_HumidityChart_Xaxis, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_HumidityChart_Xaxis, 1, LV_PART_ITEMS);   //LVGL-9.1 ticks are thicker by default
+    lv_obj_set_style_line_width(ui_HumidityChart_Xaxis, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_HumidityChart_Xaxis, 5, LV_PART_ITEMS);      //minor tick length
+    lv_obj_set_style_length(ui_HumidityChart_Xaxis, 10, LV_PART_INDICATOR);      //major tick length
+    lv_scale_set_range(ui_HumidityChart_Xaxis, 0, 5 > 0 ? 5 - 1 : 0);
+    lv_scale_set_total_tick_count(ui_HumidityChart_Xaxis, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_HumidityChart_Xaxis, 2 >= 1 ? 2 : 1);
+    ui_HumidityChart_Yaxis1 = lv_scale_create(ui_HumidityChart);
+    lv_scale_set_mode(ui_HumidityChart_Yaxis1, LV_SCALE_MODE_VERTICAL_LEFT);
+    lv_obj_set_size(ui_HumidityChart_Yaxis1, 50, lv_pct(100));
+    lv_obj_set_align(ui_HumidityChart_Yaxis1, LV_ALIGN_LEFT_MID);
+    lv_obj_set_x(ui_HumidityChart_Yaxis1, -50 - lv_obj_get_style_pad_left(ui_HumidityChart,
+                                                                          LV_PART_MAIN) - lv_obj_get_style_border_width(ui_HumidityChart, LV_PART_MAIN) + 2);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis1, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis1, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis1, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_HumidityChart_Yaxis1, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_HumidityChart_Yaxis1, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_HumidityChart_Yaxis1, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_HumidityChart_Yaxis1, 2 >= 1 ? 2 : 1);
+    ui_HumidityChart_Yaxis2 = lv_scale_create(ui_HumidityChart);
+    lv_scale_set_mode(ui_HumidityChart_Yaxis2, LV_SCALE_MODE_VERTICAL_RIGHT);
+    lv_obj_set_size(ui_HumidityChart_Yaxis2, 25, lv_pct(100));
+    lv_obj_set_align(ui_HumidityChart_Yaxis2, LV_ALIGN_RIGHT_MID);
+    lv_obj_set_x(ui_HumidityChart_Yaxis2, 25 + lv_obj_get_style_pad_right(ui_HumidityChart,
+                                                                          LV_PART_MAIN) + lv_obj_get_style_border_width(ui_HumidityChart, LV_PART_MAIN) + 1);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis2, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis2, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_HumidityChart_Yaxis2, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_HumidityChart_Yaxis2, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_HumidityChart_Yaxis2, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_HumidityChart_Yaxis2, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_HumidityChart_Yaxis2, 2 >= 1 ? 2 : 1);
+    lv_scale_set_label_show(ui_HumidityChart_Yaxis2, false);
+
+    //This workaround (an invisible outline) is needed because without it chart overflow-visible doesn't work in LVGL-9.1
+    lv_obj_set_style_outline_pad(ui_HumidityChart, LV_MAX3(50, 50, 25),
+                                 LV_PART_MAIN | LV_STATE_DEFAULT);   //workaround for ineffective 'overflow visible' flag
+    lv_obj_set_style_outline_width(ui_HumidityChart, -1, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_PressureContainer = lv_obj_create(ui_SensorsData);
+    lv_obj_remove_style_all(ui_PressureContainer);
+    lv_obj_set_width(ui_PressureContainer, 385);
+    lv_obj_set_height(ui_PressureContainer, 172);
+    lv_obj_set_align(ui_PressureContainer, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_PressureContainer, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(ui_PressureContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_remove_flag(ui_PressureContainer, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_scrollbar_mode(ui_PressureContainer, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_scroll_dir(ui_PressureContainer, LV_DIR_VER);
+
+    ui_PressureLable = lv_label_create(ui_PressureContainer);
+    lv_obj_set_width(ui_PressureLable, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_PressureLable, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_PressureLable, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_PressureLable, "Pressure (hPa)");
+
+    ui_PressureChart = lv_chart_create(ui_PressureContainer);
+    lv_obj_set_width(ui_PressureChart, 269);
+    lv_obj_set_height(ui_PressureChart, 128);
+    lv_obj_set_align(ui_PressureChart, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_PressureChart, LV_OBJ_FLAG_OVERFLOW_VISIBLE);     /// Flags
+    lv_obj_remove_flag(ui_PressureChart, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_PressureChart,
+                    LV_OBJ_FLAG_OVERFLOW_VISIBLE);      //make scales visible - Should it be forced to True?
+    //lv_obj_remove_flag( ui_PressureChart, LV_OBJ_FLAG_SCROLLABLE );    //no chart-zoom in LVGL9 - Shouldn't it be forced to False?
+    lv_chart_set_type(ui_PressureChart, LV_CHART_TYPE_LINE);
+    lv_obj_set_style_bg_color(ui_PressureChart, lv_color_hex(0x0015D1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_PressureChart, 100, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_PressureChart_Xaxis = lv_scale_create(ui_PressureChart);
+    lv_scale_set_mode(ui_PressureChart_Xaxis, LV_SCALE_MODE_HORIZONTAL_BOTTOM);
+    lv_obj_set_size(ui_PressureChart_Xaxis, lv_pct(100), 50);
+    lv_obj_set_align(ui_PressureChart_Xaxis, LV_ALIGN_BOTTOM_MID);
+    lv_obj_set_y(ui_PressureChart_Xaxis, 50 + lv_obj_get_style_pad_bottom(ui_PressureChart,
+                                                                          LV_PART_MAIN) + lv_obj_get_style_border_width(ui_PressureChart, LV_PART_MAIN));
+    lv_obj_set_style_line_width(ui_PressureChart_Xaxis, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_PressureChart_Xaxis, 1, LV_PART_ITEMS);   //LVGL-9.1 ticks are thicker by default
+    lv_obj_set_style_line_width(ui_PressureChart_Xaxis, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_PressureChart_Xaxis, 5, LV_PART_ITEMS);      //minor tick length
+    lv_obj_set_style_length(ui_PressureChart_Xaxis, 10, LV_PART_INDICATOR);      //major tick length
+    lv_scale_set_range(ui_PressureChart_Xaxis, 0, 5 > 0 ? 5 - 1 : 0);
+    lv_scale_set_total_tick_count(ui_PressureChart_Xaxis, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_PressureChart_Xaxis, 2 >= 1 ? 2 : 1);
+    ui_PressureChart_Yaxis1 = lv_scale_create(ui_PressureChart);
+    lv_scale_set_mode(ui_PressureChart_Yaxis1, LV_SCALE_MODE_VERTICAL_LEFT);
+    lv_obj_set_size(ui_PressureChart_Yaxis1, 50, lv_pct(100));
+    lv_obj_set_align(ui_PressureChart_Yaxis1, LV_ALIGN_LEFT_MID);
+    lv_obj_set_x(ui_PressureChart_Yaxis1, -50 - lv_obj_get_style_pad_left(ui_PressureChart,
+                                                                          LV_PART_MAIN) - lv_obj_get_style_border_width(ui_PressureChart, LV_PART_MAIN) + 2);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis1, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis1, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis1, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_PressureChart_Yaxis1, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_PressureChart_Yaxis1, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_PressureChart_Yaxis1, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_PressureChart_Yaxis1, 2 >= 1 ? 2 : 1);
+    ui_PressureChart_Yaxis2 = lv_scale_create(ui_PressureChart);
+    lv_scale_set_mode(ui_PressureChart_Yaxis2, LV_SCALE_MODE_VERTICAL_RIGHT);
+    lv_obj_set_size(ui_PressureChart_Yaxis2, 25, lv_pct(100));
+    lv_obj_set_align(ui_PressureChart_Yaxis2, LV_ALIGN_RIGHT_MID);
+    lv_obj_set_x(ui_PressureChart_Yaxis2, 25 + lv_obj_get_style_pad_right(ui_PressureChart,
+                                                                          LV_PART_MAIN) + lv_obj_get_style_border_width(ui_PressureChart, LV_PART_MAIN) + 1);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis2, 0, LV_PART_MAIN);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis2, 1, LV_PART_ITEMS);
+    lv_obj_set_style_line_width(ui_PressureChart_Yaxis2, 1, LV_PART_INDICATOR);
+    lv_obj_set_style_length(ui_PressureChart_Yaxis2, 5, LV_PART_ITEMS);   //minor tick length
+    lv_obj_set_style_length(ui_PressureChart_Yaxis2, 10, LV_PART_INDICATOR);   //major tick length
+    lv_scale_set_total_tick_count(ui_PressureChart_Yaxis2, (5 > 0 ? 5 - 1 : 0) * 2 + 1);
+    lv_scale_set_major_tick_every(ui_PressureChart_Yaxis2, 2 >= 1 ? 2 : 1);
+    lv_scale_set_label_show(ui_PressureChart_Yaxis2, false);
+
+    //This workaround (an invisible outline) is needed because without it chart overflow-visible doesn't work in LVGL-9.1
+    lv_obj_set_style_outline_pad(ui_PressureChart, LV_MAX3(50, 50, 25),
+                                 LV_PART_MAIN | LV_STATE_DEFAULT);   //workaround for ineffective 'overflow visible' flag
+    lv_obj_set_style_outline_width(ui_PressureChart, -1, LV_PART_MAIN | LV_STATE_DEFAULT);
     uic_SystemTab = ui_SystemTab;
     uic_Status = ui_Status;
 
@@ -247,6 +453,9 @@ void ui_Screen1_screen_destroy(void)
     ui_StatusTab = NULL;
     uic_Status = NULL;
     ui_Status = NULL;
+    ui_TimeDate = NULL;
+    ui_TimeLabel = NULL;
+    ui_DateLabel = NULL;
     ui_Wifi = NULL;
     ui_WifiStatus = NULL;
     ui_SSID = NULL;
@@ -259,6 +468,14 @@ void ui_Screen1_screen_destroy(void)
     ui_UpTime = NULL;
     ui_SensorsTab = NULL;
     ui_SensorsData = NULL;
-    ui_SensorsChart = NULL;
+    ui_TemperatureContainer = NULL;
+    ui_TemperatureLable = NULL;
+    ui_TemperatureChart = NULL;
+    ui_HumidityContainer = NULL;
+    ui_HumidityLable = NULL;
+    ui_HumidityChart = NULL;
+    ui_PressureContainer = NULL;
+    ui_PressureLable = NULL;
+    ui_PressureChart = NULL;
 
 }
