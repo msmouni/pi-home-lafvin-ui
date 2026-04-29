@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(lvgl_app C)
+project(pi-home-lafvin-ui C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -40,13 +40,14 @@ set(APP_SOURCES
     src/drivers/display/display.c
     src/drivers/evdev/evdev.c
     src/drivers/lvgl_driver.c
+    pi-home-utils/model/model.c
 )
 
 # ========== Executable ==========
-add_executable(lvgl_app ${APP_SOURCES})
+add_executable(pi-home-lafvin-ui ${APP_SOURCES})
 
 # ========== Includes ==========
-target_include_directories(lvgl_app PRIVATE
+target_include_directories(pi-home-lafvin-ui PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/lvgl
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gui
@@ -59,12 +60,13 @@ target_include_directories(lvgl_app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/screens
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/images
     ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/squareline/fonts
+    ${CMAKE_CURRENT_SOURCE_DIR}/pi-home-utils/model
 )
 
 # Ensure lv_conf.h is found
-target_compile_definitions(lvgl_app PRIVATE LV_CONF_INCLUDE_SIMPLE)
+target_compile_definitions(pi-home-lafvin-ui PRIVATE LV_CONF_INCLUDE_SIMPLE)
 
-target_link_libraries(lvgl_app
+target_link_libraries(pi-home-lafvin-ui
     lvgl
     pthread
     m
@@ -72,6 +74,6 @@ target_link_libraries(lvgl_app
 )
 
 # ========== Install ==========
-install(TARGETS lvgl_app
+install(TARGETS pi-home-lafvin-ui
     RUNTIME DESTINATION bin
 )

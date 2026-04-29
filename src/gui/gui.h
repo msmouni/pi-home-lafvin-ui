@@ -6,23 +6,12 @@
 #include <string.h>
 #include <time.h>
 
-// TMP: to take from pi-home-display package later
-typedef struct { /* Sensors data */
-    bool has_bmp280;
-    float bmp280_temperature;
-    float bmp280_pressure;
-    bool has_htu21d;
-    float htu21d_temperature;
-    float htu21d_humidity; /* System info */
-    bool wifi_connected;
-    char ip[128];
-    time_t timestamp;
-    int cpu_temp;
-    int cpu_load;
-} display_model_t;
+#define GUI_UPDATE_INTERVAL_MS 5000
 
 void gui_create(void);
 
-void gui_update(const display_model_t *model);
+void gui_update_system(void);
+
+void gui_update_sensors(lv_timer_t *timer);
 
 #endif /* PI_HOME_LAFVIN_UI_GUI_H */
