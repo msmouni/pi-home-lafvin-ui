@@ -1,12 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "gui.h"
 #include "lvgl_driver.h"
-
-/* =========================
- * MAIN
- * ========================= */
 
 int main(int argc, char **argv)
 {
@@ -22,7 +19,18 @@ int main(int argc, char **argv)
 
     gui_create();
 
-    lvgl_driver_run(lvgl_drv);
+    lv_timer_create(gui_update_sensors, GUI_UPDATE_INTERVAL_MS, NULL);
+
+    uint32_t idle_time;
+
+    /* Handle LVGL tasks */
+    while (true) {
+        gui_update_system();
+
+        /* Returns the time to the next timer execution */
+        idle_time = lv_timer_handler();
+        usleep(idle_time * 1000);
+    }
 
     return 0;
 }

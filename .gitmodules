@@ -1,3 +1,6 @@
 [submodule "lvgl"]
 	path = lvgl
 	url = https://github.com/lvgl/lvgl.git
+[submodule "pi-home-utils"]
+	path = pi-home-utils
+	url = https://github.com/msmouni/pi-home-utils.git
